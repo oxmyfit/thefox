@@ -808,21 +808,32 @@ textarea:focus {
     gap: 10px 14px;
     left: 0;
     right: 0;
-    width: 100vw;
-    max-width: 100vw;
+    width: auto;
+    max-width: 100%;
     overflow: hidden;
     padding-bottom: 12px;
     background: rgba(24, 19, 17, 0.86);
     backdrop-filter: blur(18px);
   }
 
+  .site-header > * {
+    min-width: 0;
+  }
+
+  .header-actions {
+    display: none;
+  }
+
   .nav-links {
     order: 3;
-    width: calc(100vw - 24px);
-    max-width: calc(100vw - 24px);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     padding: 4px 0 2px;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .nav-links::-webkit-scrollbar {
@@ -860,7 +871,7 @@ textarea:focus {
   }
 
   .signature-strip {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -872,6 +883,8 @@ textarea:focus {
   }
 
   .site-header {
+    display: grid;
+    grid-template-columns: 1fr;
     position: fixed;
   }
 
@@ -885,10 +898,6 @@ textarea:focus {
     height: 36px;
   }
 
-  .header-actions {
-    display: none;
-  }
-
   .solid-button,
   .ghost-button,
   .filter-button {
@@ -898,10 +907,34 @@ textarea:focus {
   }
 
   .nav-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 296px);
+    max-width: 296px;
     gap: 7px;
-    font-size: 0.68rem;
+    overflow-x: visible;
+    font-size: 0.61rem;
     margin-top: 4px;
-    padding-right: 4px;
+    padding-right: 0;
+  }
+
+  .nav-links a {
+    min-width: 0;
+    padding: 8px 6px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .nav-links a[href="#contact"] {
+    display: none;
+  }
+
+  .nav-links a[href="#events"] {
+    display: none;
+  }
+
+  .nav-links a[href="#reservations"] {
+    display: none;
   }
 
   .hero,
@@ -968,6 +1001,25 @@ textarea:focus {
     letter-spacing: 0.08em;
     overflow-wrap: anywhere;
     text-align: center;
+  }
+
+  .signature-strip {
+    display: flex;
+    grid-template-columns: none;
+    gap: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .signature-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .signature-strip article {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
   }
 
   .image-panel img,
