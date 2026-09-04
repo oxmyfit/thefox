@@ -15,6 +15,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -564,6 +568,14 @@ textarea:focus {
 .social-icon svg {
   width: 20px;
   height: 20px;
+  color: currentColor;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+.social-icon[aria-label="Instagram"] svg {
+  fill: none;
+  stroke-width: 2;
 }
 
 .admin-body {
