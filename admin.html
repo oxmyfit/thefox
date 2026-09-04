@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Fox Admin</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <script src="admin.js" defer></script>
+  </head>
+  <body class="admin-body locked">
+    <section class="admin-gate" id="adminGate">
+      <form class="gate-panel" id="gateForm">
+        <a class="brand gate-brand" href="index.html">
+          <span class="brand-mark"><img src="assets/thefox-logo.svg" alt="" /></span>
+          <span>The Fox</span>
+        </a>
+        <p class="eyebrow">Private Access</p>
+        <h1>Enter admin code.</h1>
+        <label>
+          Access Code
+          <input name="code" type="password" autocomplete="off" required />
+        </label>
+        <button class="solid-button" type="submit">Unlock Dashboard</button>
+        <p class="form-message gate-error" id="gateMessage" role="status"></p>
+      </form>
+    </section>
+
+    <header class="admin-header protected-content" hidden>
+      <a class="brand" href="index.html">
+        <span class="brand-mark"><img src="assets/thefox-logo.svg" alt="" /></span>
+        <span>The Fox</span>
+      </a>
+      <div class="header-actions">
+        <button class="ghost-button icon-button" id="exportMenu" type="button" title="Export menu" aria-label="Export menu">
+          <i data-lucide="download"></i>
+        </button>
+        <button class="ghost-button icon-button" id="resetMenu" type="button" title="Reset menu" aria-label="Reset menu">
+          <i data-lucide="rotate-ccw"></i>
+        </button>
+        <a class="solid-button" href="index.html">View Site</a>
+      </div>
+    </header>
+
+    <main class="admin-shell protected-content" hidden>
+      <section class="admin-title">
+        <p class="eyebrow">Dashboard</p>
+        <h1>Menu, bookings, and event requests.</h1>
+      </section>
+
+      <section class="admin-layout">
+        <form class="editor-panel" id="menuForm">
+          <input type="hidden" name="id" />
+          <div class="panel-heading">
+            <h2 id="formTitle">Add Menu Item</h2>
+            <button class="ghost-button icon-button" id="clearForm" type="button" title="Clear form" aria-label="Clear form">
+              <i data-lucide="x"></i>
+            </button>
+          </div>
+          <label>
+            Item Name
+            <input name="name" required />
+          </label>
+          <label>
+            Description
+            <textarea name="description" rows="4" required></textarea>
+          </label>
+          <div class="form-row">
+            <label>
+              Category
+              <select name="category" required>
+                <option>Brunch Favorites</option>
+                <option>Cocktails & Spritz</option>
+                <option>Coffee & Soft Drinks</option>
+                <option>Wine & Spirits</option>
+              </select>
+            </label>
+            <label>
+              Price ALL
+              <input name="price" type="number" min="0" step="10" required />
+            </label>
+          </div>
+          <label class="checkbox-line">
+            <input name="featured" type="checkbox" />
+            Featured item
+          </label>
+          <button class="solid-button" type="submit">Save Item</button>
+        </form>
+
+        <section class="table-panel">
+          <div class="panel-heading">
+            <h2>Menu Items</h2>
+            <div class="search-box">
+              <i data-lucide="search"></i>
+              <input id="menuSearch" placeholder="Search menu" />
+            </div>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminMenuRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="requests-grid">
+        <article class="request-panel">
+          <div class="panel-heading">
+            <h2>Reservations</h2>
+            <button class="ghost-button icon-button" id="clearReservations" type="button" title="Clear reservations" aria-label="Clear reservations">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+          <div id="reservationRows" class="request-list"></div>
+        </article>
+        <article class="request-panel">
+          <div class="panel-heading">
+            <h2>Events</h2>
+            <button class="ghost-button icon-button" id="clearEvents" type="button" title="Clear events" aria-label="Clear events">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+          <div id="eventRows" class="request-list"></div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
