@@ -1222,6 +1222,42 @@ textarea:focus {
   color: var(--ink);
 }
 
+.order-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.order-actions button {
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0 14px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.accept-order {
+  color: #fff;
+  background: linear-gradient(135deg, #315747, #1f4337);
+}
+
+.deny-order {
+  color: #7f2a18;
+  border-color: rgba(127, 42, 24, 0.18);
+  background: rgba(127, 42, 24, 0.05);
+}
+
+.status-accepted {
+  background: rgba(49, 87, 71, 0.12);
+  color: var(--leaf);
+}
+
+.status-denied {
+  background: rgba(127, 42, 24, 0.08);
+  color: #7f2a18;
+}
+
 @media (max-width: 980px) {
   .delivery-layout {
     flex-direction: column;

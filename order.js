@@ -268,9 +268,6 @@ function placeOrder(event) {
   message.textContent = "Your delivery order was sent successfully.";
   message.style.color = "#315747";
 
-  const notify = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
-  notify.play().catch(() => {});
-
   const eventName = "thefox:new-order";
   window.dispatchEvent(new CustomEvent(eventName, { detail: order }));
 }

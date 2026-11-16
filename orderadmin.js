@@ -106,6 +106,35 @@ function formatDate(value) {
   return date.toLocaleString("en-GB");
 }
 
+function playOrderSound() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  const audioContext = new AudioContextClass();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  oscillator.type = "triangle";
+  oscillator.frequency.value = 880;
+  gainNode.gain.value = 0.0001;
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  const now = audioContext.currentTime;
+  gainNode.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+  oscillator.start(now);
+  oscillator.stop(now + 0.25);
+}
+
+function updateOrderStatus(orderId, nextStatus) {
+  const orders = readStore(STORAGE_KEYS.orders, []);
+  const updated = orders.map((order) => (order.id === orderId ? { ...order, status: nextStatus } : order));
+  writeStore(STORAGE_KEYS.orders, updated);
+  renderOrders();
+}
+
 function renderOrders() {
   const list = document.querySelector("#ordersList");
   if (!list) return;
@@ -141,31 +170,22 @@ function renderOrders() {
               .map((item) => `<li>${item.name} × ${item.quantity} — ${formatPrice(item.price * item.quantity)}</li>`)
               .join("")}
           </ul>
+
+          <div class="order-actions">
+            <button class="accept-order" type="button" data-order-action="accept" data-order-id="${order.id}">Accept</button>
+            <button class="deny-order" type="button" data-order-action="deny" data-order-id="${order.id}">Deny</button>
+          </div>
         </article>
       `,
     )
     .join("");
-}
 
-function playOrderSound() {
-  const audio = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
-  audio.volume = 0.5;
-  audio.play().catch(() => {});
-}
-
-function watchForOrders() {
-  window.addEventListener("storage", (event) => {
-    if (event.key === STORAGE_KEYS.orders) {
-      renderOrders();
-      playOrderSound();
-    }
-  });
-
-  window.addEventListener("thefox:new-order", (event) => {
-    if (event.detail && event.detail.id) {
-      renderOrders();
-      playOrderSound();
-    }
+  list.querySelectorAll("[data-order-action]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const orderId = button.dataset.orderId;
+      const action = button.dataset.orderAction;
+      updateOrderStatus(orderId, action === "accept" ? "accepted" : "denied");
+    });
   });
 }
 
