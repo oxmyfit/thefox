@@ -23,14 +23,63 @@ const defaultMenu = [
 
 function readStore(key, fallback) {
   try {
-    return JSON.parse(localStorage.getItem(key)) || fallback;
+    const stored = localStorage.getItem(key);
+    if (stored !== null) {
+      return JSON.parse(stored);
+    }
   } catch {
-    return fallback;
+    // localStorage can fail when the site is opened from a local file or restricted browser context.
   }
+
+  try {
+    const cookieKey = encodeURIComponent(key);
+    const cookie = document.cookie.split("; ").find((entry) => entry.startsWith(`${cookieKey}=`));
+    if (cookie) {
+      const rawValue = decodeURIComponent(cookie.split("=").slice(1).join("="));
+      return JSON.parse(rawValue);
+    }
+  } catch {
+    // Ignore cookie parse errors and fall back to default data.
+  }
+
+  try {
+    const template = window.name ? JSON.parse(window.name) : {};
+    if (template && Object.prototype.hasOwnProperty.call(template, key)) {
+      return template[key];
+    }
+  } catch {
+    // Ignore window.name parse errors.
+  }
+
+  return fallback;
 }
 
 function writeStore(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+  const serialised = JSON.stringify(value);
+
+  try {
+    localStorage.setItem(key, serialised);
+  } catch {
+    // Ignore localStorage write failures for file:// or restricted contexts.
+  }
+
+  try {
+    document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(serialised)}; path=/; SameSite=Lax`;
+  } catch {
+    // Ignore cookie write failures.
+  }
+
+  try {
+    const payload = window.name ? JSON.parse(window.name) : {};
+    payload[key] = value;
+    window.name = JSON.stringify(payload);
+  } catch {
+    // Ignore window.name write failures.
+  }
+}
+
+function notifyMenuUpdate() {
+  window.dispatchEvent(new CustomEvent("thefox:menu-updated", { detail: { menu: getMenu() } }));
 }
 
 function getMenu() {
@@ -53,10 +102,10 @@ function renderMenu() {
   if (!menuGrid || !filters) return;
 
   const menu = getMenu();
-  const categories = ["All", ...new Set(menu.map((item) => item.category))];
   let activeCategory = "All";
 
   function paint() {
+    const categories = ["All", ...new Set(menu.map((item) => item.category))];
     filters.innerHTML = categories
       .map((category) => `<button class="filter-button ${category === activeCategory ? "active" : ""}" type="button" data-category="${category}">${category}</button>`)
       .join("");
@@ -78,11 +127,29 @@ function renderMenu() {
       .join("");
   }
 
+  function syncMenu() {
+    const updatedMenu = getMenu();
+    if (JSON.stringify(updatedMenu) !== JSON.stringify(menu)) {
+      menu.splice(0, menu.length, ...updatedMenu);
+    }
+    paint();
+  }
+
   filters.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-category]");
     if (!button) return;
     activeCategory = button.dataset.category;
     paint();
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === STORAGE_KEYS.menu) {
+      syncMenu();
+    }
+  });
+
+  window.addEventListener("thefox:menu-updated", () => {
+    syncMenu();
   });
 
   paint();
@@ -123,9 +190,31 @@ function wireHero() {
   setInterval(() => show(current + 1), 5500);
 }
 
+function wireMobileMenu() {
+  const header = document.querySelector(".site-header");
+  const toggle = document.querySelector(".mobile-menu-toggle");
+  const nav = document.querySelector("#primaryNav");
+  if (!header || !toggle || !nav) return;
+
+  function setOpen(isOpen) {
+    header.classList.toggle("menu-open", isOpen);
+    toggle.setAttribute("aria-expanded", String(isOpen));
+    toggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+  }
+
+  toggle.addEventListener("click", () => {
+    setOpen(!header.classList.contains("menu-open"));
+  });
+
+  nav.addEventListener("click", (event) => {
+    if (event.target.closest("a")) setOpen(false);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderMenu();
   wireForms();
   wireHero();
+  wireMobileMenu();
   window.lucide?.createIcons();
 });

@@ -62,14 +62,63 @@ function unlockDashboard() {
 
 function readStore(key, fallback) {
   try {
-    return JSON.parse(localStorage.getItem(key)) || fallback;
+    const stored = localStorage.getItem(key);
+    if (stored !== null) {
+      return JSON.parse(stored);
+    }
   } catch {
-    return fallback;
+    // localStorage can fail on restricted file:// contexts.
   }
+
+  try {
+    const cookieKey = encodeURIComponent(key);
+    const cookie = document.cookie.split("; ").find((entry) => entry.startsWith(`${cookieKey}=`));
+    if (cookie) {
+      const rawValue = decodeURIComponent(cookie.split("=").slice(1).join("="));
+      return JSON.parse(rawValue);
+    }
+  } catch {
+    // Ignore cookie parse errors.
+  }
+
+  try {
+    const payload = window.name ? JSON.parse(window.name) : {};
+    if (payload && Object.prototype.hasOwnProperty.call(payload, key)) {
+      return payload[key];
+    }
+  } catch {
+    // Ignore window.name parse errors.
+  }
+
+  return fallback;
 }
 
 function writeStore(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+  const serialized = JSON.stringify(value);
+
+  try {
+    localStorage.setItem(key, serialized);
+  } catch {
+    // Ignore localStorage write failures for restricted browser contexts.
+  }
+
+  try {
+    document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(serialized)}; path=/; SameSite=Lax`;
+  } catch {
+    // Ignore cookie write failures.
+  }
+
+  try {
+    const payload = window.name ? JSON.parse(window.name) : {};
+    payload[key] = value;
+    window.name = JSON.stringify(payload);
+  } catch {
+    // Ignore window.name write failures.
+  }
+}
+
+function notifyMenuUpdate() {
+  window.dispatchEvent(new CustomEvent("thefox:menu-updated", { detail: { menu: getMenu() } }));
 }
 
 function getMenu() {
@@ -81,6 +130,7 @@ function getMenu() {
 
 function setMenu(menu) {
   writeStore(STORAGE_KEYS.menu, menu);
+  notifyMenuUpdate();
 }
 
 function escapeAttr(value) {

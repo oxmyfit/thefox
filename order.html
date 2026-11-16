@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Fox Delivery | Order Online</title>
+    <meta
+      name="description"
+      content="Order delivery from The Fox online. Explore our menu, add items to your cart, and place a delivery request in minutes."
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <script src="order.js" defer></script>
+  </head>
+  <body class="order-body">
+    <header class="site-header order-header">
+      <a class="brand" href="index.html" aria-label="The Fox home">
+        <span class="brand-mark"><img src="assets/thefox-logo.svg" alt="" /></span>
+        <span>The Fox</span>
+      </a>
+      <button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Open menu">
+        <span>Menu</span>
+        <i data-lucide="chevron-down"></i>
+      </button>
+      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#menu">Menu</a>
+        <a href="order.html" aria-current="page">Delivery</a>
+        <a href="orderadmin.html">Orders</a>
+      </nav>
+      <div class="header-actions">
+        <a class="solid-button" href="#checkout">Checkout</a>
+      </div>
+    </header>
+
+    <main class="order-shell">
+      <section class="delivery-hero">
+        <div class="delivery-copy">
+          <p class="eyebrow">Fast delivery</p>
+          <h1>Fresh from The Fox to your door.</h1>
+          <p>
+            Browse the same menu from the restaurant, add your favourites, and place a quick delivery request.
+          </p>
+        </div>
+        <div class="delivery-badges">
+          <span><i data-lucide="clock-3"></i> 15–30 min</span>
+          <span><i data-lucide="map-pin"></i> Kavajë delivery</span>
+          <span><i data-lucide="wallet"></i> Cash / card</span>
+        </div>
+      </section>
+
+      <section class="delivery-layout">
+        <div class="catalog-panel">
+          <div class="topbar">
+            <div>
+              <p class="eyebrow small">Menu</p>
+              <h2>Order now</h2>
+            </div>
+            <div class="search-box compact">
+              <i data-lucide="search"></i>
+              <input id="menuSearch" type="search" placeholder="Search dishes" />
+            </div>
+          </div>
+          <div class="menu-toolbar" id="menuFilters" aria-label="Menu categories"></div>
+          <div id="menuGrid" class="delivery-grid" aria-live="polite"></div>
+        </div>
+
+        <aside class="checkout-panel" id="checkout">
+          <div class="checkout-header">
+            <div>
+              <p class="eyebrow small">Your order</p>
+              <h2>Cart</h2>
+            </div>
+            <span class="cart-count" id="cartCount">0 items</span>
+          </div>
+
+          <div id="cartItems" class="cart-items empty">
+            <p>Your cart is empty. Add a few favourites to get started.</p>
+          </div>
+
+          <div class="totals">
+            <div><span>Subtotal</span><strong id="subtotal">0 ALL</strong></div>
+            <div><span>Delivery</span><strong id="deliveryFee">200 ALL</strong></div>
+            <div class="grand-total"><span>Total</span><strong id="total">200 ALL</strong></div>
+          </div>
+
+          <form id="orderForm" class="delivery-form">
+            <div class="field-row two-up">
+              <label>
+                Full name
+                <input name="name" required />
+              </label>
+              <label>
+                Phone
+                <input name="phone" type="tel" required />
+              </label>
+            </div>
+
+            <label>
+              Delivery address
+              <input name="address" required />
+            </label>
+
+            <label>
+              Notes for the kitchen
+              <textarea name="notes" rows="3" placeholder="Extra sauce, no onions, etc."></textarea>
+            </label>
+
+            <button class="solid-button submit-order" type="submit">Place delivery order</button>
+            <p id="orderMessage" class="form-message" role="status"></p>
+          </form>
+        </aside>
+      </section>
+    </main>
+  </body>
+</html>

@@ -19,14 +19,22 @@
         <span class="brand-mark"><img src="assets/thefox-logo.svg" alt="" /></span>
         <span>The Fox</span>
       </a>
-      <nav class="nav-links" aria-label="Primary navigation">
+      <button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Open menu">
+        <span>Menu</span>
+        <i data-lucide="chevron-down"></i>
+      </button>
+      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
         <a href="#about">About</a>
         <a href="#menu">Menu</a>
         <a href="#events">Events</a>
         <a href="#reservations">Reserve</a>
+        <a href="order.html">Delivery</a>
+        <a href="orderadmin.html">Orders</a>
         <a href="#contact">Contact</a>
+        <a class="mobile-book-link" href="#reservations">Book</a>
       </nav>
       <div class="header-actions">
+        <a class="ghost-button" href="order.html">Order Online</a>
         <a class="solid-button" href="#reservations">Book</a>
       </div>
     </header>
@@ -43,6 +51,7 @@
           </p>
           <div class="button-row">
             <a class="solid-button large" href="#reservations">Reserve a Table</a>
+            <a class="ghost-button large" href="order.html">Order Delivery</a>
             <a class="ghost-button large" href="#menu">Explore Menu</a>
           </div>
         </div>
