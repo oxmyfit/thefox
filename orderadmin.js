@@ -3,6 +3,42 @@ const STORAGE_KEYS = {
   orders: "thefox.orders",
 };
 
+const ACCESS_HASH = "1776dc47634a98b57669c04590e086cb07b44155ba3e4920933b38d78c200461";
+const ACCESS_MASK = [43, 10, 7, 28, 15, 3, 15, 92, 94, 92, 88, 46];
+const SESSION_KEY = "thefox.admin.unlocked";
+const gateForm = document.querySelector("#gateForm");
+const gateMessage = document.querySelector("#gateMessage");
+
+async function digestCode(value) {
+  if (!crypto.subtle) return "";
+  const bytes = new TextEncoder().encode(value);
+  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function matchesFallback(value) {
+  return [...value].map((char) => char.charCodeAt(0) ^ 110).every((code, index) => code === ACCESS_MASK[index]) && value.length === ACCESS_MASK.length;
+}
+
+async function canUnlock(value) {
+  const code = String(value).trim();
+  try {
+    return (await digestCode(code)) === ACCESS_HASH || matchesFallback(code);
+  } catch {
+    return matchesFallback(code);
+  }
+}
+
+function unlockOrders() {
+  document.body.classList.remove("locked");
+  document.querySelector("#adminGate").hidden = true;
+  document.querySelectorAll(".protected-content").forEach((element) => {
+    element.hidden = false;
+  });
+  renderOrders();
+  window.lucide?.createIcons();
+}
+
 function readStore(key, fallback) {
   try {
     const stored = localStorage.getItem(key);
@@ -133,7 +169,24 @@ function watchForOrders() {
   });
 }
 
+gateForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const code = new FormData(gateForm).get("code");
+  if (await canUnlock(code)) {
+    sessionStorage.setItem(SESSION_KEY, "1");
+    gateForm.reset();
+    unlockOrders();
+    return;
+  }
+  gateMessage.textContent = "Incorrect code.";
+});
+
 document.addEventListener("DOMContentLoaded", () => {
+  if (sessionStorage.getItem(SESSION_KEY) === "1") {
+    unlockOrders();
+    return;
+  }
+  window.lucide?.createIcons();
   renderOrders();
   watchForOrders();
   document.querySelector("#refreshOrders")?.addEventListener("click", renderOrders);
