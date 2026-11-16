@@ -846,6 +846,8 @@ textarea:focus {
   flex-direction: column;
   gap: 24px;
   padding: 108px clamp(18px, 4vw, 54px) 60px;
+  max-width: 1540px;
+  margin: 0 auto;
 }
 
 .delivery-hero {
@@ -923,6 +925,15 @@ textarea:focus {
   min-width: 0;
   flex-direction: column;
   padding: 22px;
+  min-height: 760px;
+}
+
+.checkout-panel {
+  width: min(100%, 440px);
+  padding: 22px;
+  position: sticky;
+  top: 94px;
+  min-height: 760px;
 }
 
 .topbar {
@@ -1019,23 +1030,6 @@ textarea:focus {
   padding: 6px 10px;
   font-size: 0.72rem;
   font-weight: 800;
-}
-
-.checkout-panel {
-  width: min(100%, 440px);
-  padding: 22px;
-  position: sticky;
-  top: 94px;
-}
-
-.checkout-header,
-.totals div,
-.admin-order-header,
-.admin-order-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
 }
 
 .cart-count {
@@ -1183,9 +1177,11 @@ textarea:focus {
 }
 
 .orders-list {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
   margin-top: 20px;
+  width: 100%;
 }
 
 .admin-order-item {
@@ -1195,23 +1191,13 @@ textarea:focus {
   border-radius: 12px;
   padding: 18px;
   background: linear-gradient(180deg, #fff, #faf5ee);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-order-item h3 {
   margin: 0;
   font-size: 1.2rem;
-}
-
-.admin-order-meta {
-  color: var(--muted);
-  font-size: 0.82rem;
-}
-
-.order-address,
-.order-notes {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.6;
 }
 
 .order-items {
@@ -1220,6 +1206,7 @@ textarea:focus {
   padding-left: 18px;
   margin: 0;
   color: var(--ink);
+  width: 100%;
 }
 
 .order-actions {
@@ -1263,6 +1250,11 @@ textarea:focus {
     flex-direction: column;
   }
 
+  .catalog-panel,
+  .checkout-panel {
+    min-height: unset;
+  }
+
   .checkout-panel {
     width: 100%;
     position: static;
@@ -1281,6 +1273,8 @@ textarea:focus {
 @media (max-width: 640px) {
   .order-shell {
     padding-top: 94px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
   .delivery-copy h1 {
@@ -1299,6 +1293,10 @@ textarea:focus {
   .compact {
     width: 100%;
     min-width: 0;
+  }
+
+  .admin-order-item {
+    padding: 14px;
   }
 }
 
