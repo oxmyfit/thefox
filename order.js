@@ -4,7 +4,7 @@ const STORAGE_KEYS = {
   checkout: "thefox.checkout",
 };
 
-const DELIVERY_FEE = 200;
+const DELIVERY_FEE = 50;
 
 function readStore(key, fallback) {
   try {
@@ -101,6 +101,8 @@ async function addItemToCart(itemId) {
 
   if (existing) {
     existing.quantity += 1;
+    existing.name = product.name;
+    existing.price = Number(product.price);
   } else {
     cart.push({ id: product.id, name: product.name, price: Number(product.price), quantity: 1 });
   }
@@ -204,13 +206,24 @@ function renderCart() {
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const total = subtotal + DELIVERY_FEE;
 
-  cartCount.textContent = `${itemCount} item${itemCount === 1 ? "" : "s"}`;
+  const language = localStorage.getItem("thefox.language") || "en";
+  cartCount.textContent = language === "sq"
+    ? `${itemCount} ${itemCount === 1 ? "artikull" : "artikuj"}`
+    : `${itemCount} item${itemCount === 1 ? "" : "s"}`;
+
   subtotalEl.textContent = formatMoney(subtotal);
-  totalEl.textContent = formatMoney(total);
+  document.querySelector("#deliveryFee").textContent = formatMoney(cart.length ? DELIVERY_FEE : 0);
+  totalEl.textContent = formatMoney(cart.length ? total : 0);
 
   if (!cart.length) {
+    subtotalEl.textContent = formatMoney(0);
+    document.querySelector("#deliveryFee").textContent = formatMoney(0);
+    totalEl.textContent = formatMoney(0);
     cartItems.classList.add("empty");
-    cartItems.innerHTML = '<p>Your cart is empty. Add a few favourites to get started.</p>';
+    const language = localStorage.getItem("thefox.language") || "en";
+    cartItems.innerHTML = language === "sq"
+      ? "<p>Shporta është bosh. Shto disa të preferuara për të filluar.</p>"
+      : "<p>Your cart is empty. Add a few favourites to get started.</p>";
     return;
   }
 
@@ -296,7 +309,16 @@ async function placeOrder(event) {
 
 function subscribeToMenuUpdates() {
   if (!window.thefoxCloud) return;
-  window.thefoxCloud.subscribe("menu_items", () => renderMenu());
+  window.thefoxCloud.subscribe("menu_items", async () => {
+    const menu = await getMenu();
+    const cart = getCart().map((entry) => {
+      const product = menu.find((item) => item.id === entry.id);
+      return product ? { ...entry, name: product.name, price: Number(product.price) } : entry;
+    });
+    setCart(cart);
+    await renderMenu();
+    renderCart();
+  });
 }
 
 function listenForLiveOrderUpdates() {

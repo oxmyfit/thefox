@@ -50,6 +50,26 @@
 
       <section class="orders-panel-wrap">
         <div class="order-admin-panel">
+          <div class="order-dashboard-toolbar">
+            <div>
+              <p class="eyebrow small">Daily overview</p>
+              <h2 id="selectedDateTitle">Today</h2>
+            </div>
+            <div class="date-controls">
+              <button class="ghost-button" id="todayOrders" type="button">Today</button>
+              <input id="ordersDate" type="date" aria-label="Choose order date" />
+            </div>
+          </div>
+
+          <div class="order-date-tabs" id="orderDateTabs" aria-label="Order dates"></div>
+
+          <div class="order-stats">
+            <article><span>Orders</span><strong id="statOrders">0</strong></article>
+            <article><span>Accepted</span><strong id="statAccepted">0</strong></article>
+            <article><span>Denied</span><strong id="statDenied">0</strong></article>
+            <article><span>Revenue</span><strong id="statRevenue">0 ALL</strong></article>
+          </div>
+
           <div class="panel-heading">
             <h2>Incoming orders</h2>
             <span class="live-pill" id="livePill">Live</span>

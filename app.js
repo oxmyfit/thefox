@@ -179,16 +179,59 @@ function wireForms() {
   const reservationForm = document.querySelector("#reservationForm");
   const eventForm = document.querySelector("#eventForm");
 
-  reservationForm?.addEventListener("submit", (event) => {
+  reservationForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
+    const data = Object.fromEntries(new FormData(reservationForm).entries());
     createRequest(reservationForm, STORAGE_KEYS.reservations);
+
+    if (window.thefoxCloud) {
+      try {
+        await window.thefoxCloud.createReservation({
+          id: crypto.randomUUID(),
+          created_at: new Date().toISOString(),
+          customer_name: data.name,
+          email: data.email,
+          phone: data.phone || null,
+          reservation_date: data.date,
+          reservation_time: data.time,
+          guests: Number(data.guests),
+          status: "new",
+        });
+      } catch (error) {
+        console.error("Supabase reservation submission failed.", error);
+        document.querySelector("#reservationMessage").textContent = "Could not send reservation. Please try again.";
+        return;
+      }
+    }
+
     reservationForm.reset();
     document.querySelector("#reservationMessage").textContent = "Reservation request received.";
   });
 
-  eventForm?.addEventListener("submit", (event) => {
+  eventForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
+    const data = Object.fromEntries(new FormData(eventForm).entries());
     createRequest(eventForm, STORAGE_KEYS.events);
+
+    if (window.thefoxCloud) {
+      try {
+        await window.thefoxCloud.createEventInquiry({
+          id: crypto.randomUUID(),
+          created_at: new Date().toISOString(),
+          customer_name: data.name,
+          email: data.email,
+          phone: data.phone,
+          event_date: data.date,
+          guests: Number(data.guests),
+          status: "new",
+        });
+      } catch (error) {
+        console.error("Supabase event inquiry submission failed.", error);
+        document.querySelector("#eventMessage").textContent = "Could not send inquiry. Please try again.";
+        return;
+      }
+    }
+
     eventForm.reset();
     document.querySelector("#eventMessage").textContent = "Event inquiry received.";
   });

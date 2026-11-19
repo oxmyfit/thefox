@@ -90,6 +90,58 @@ window.thefoxCloud = {
     if (error) throw error;
   },
 
+  async getReservations() {
+    const { data, error } = await window.thefoxSupabase
+      .from("reservations")
+      .select("*")
+      .order("reservation_date", { ascending: true })
+      .order("reservation_time", { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createReservation(reservation) {
+    const { data, error } = await window.thefoxSupabase
+      .from("reservations")
+      .insert(reservation)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async updateReservationStatus(id, status) {
+    const { error } = await window.thefoxSupabase
+      .from("reservations")
+      .update({ status })
+      .eq("id", id);
+
+    if (error) throw error;
+  },
+
+  async getEventInquiries() {
+    const { data, error } = await window.thefoxSupabase
+      .from("event_inquiries")
+      .select("*")
+      .order("event_date", { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createEventInquiry(inquiry) {
+    const { data, error } = await window.thefoxSupabase
+      .from("event_inquiries")
+      .insert(inquiry)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
   subscribe(table, callback) {
     return window.thefoxSupabase
       .channel(`thefox-${table}`)

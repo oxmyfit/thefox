@@ -115,25 +115,41 @@
         </section>
       </section>
 
-      <section class="requests-grid">
-        <article class="request-panel">
-          <div class="panel-heading">
-            <h2>Reservations</h2>
-            <button class="ghost-button icon-button" id="clearReservations" type="button" title="Clear reservations" aria-label="Clear reservations">
-              <i data-lucide="trash-2"></i>
-            </button>
+      <section class="requests-dashboard">
+        <div class="request-dashboard-toolbar">
+          <div>
+            <p class="eyebrow small">Calendar overview</p>
+            <h2 id="reservationDateTitle">Reservations</h2>
           </div>
-          <div id="reservationRows" class="request-list"></div>
-        </article>
-        <article class="request-panel">
-          <div class="panel-heading">
-            <h2>Events</h2>
-            <button class="ghost-button icon-button" id="clearEvents" type="button" title="Clear events" aria-label="Clear events">
-              <i data-lucide="trash-2"></i>
-            </button>
+          <div class="date-controls">
+            <button class="ghost-button" id="todayReservations" type="button">Today</button>
+            <input id="reservationDate" type="date" aria-label="Choose reservation date" />
           </div>
-          <div id="eventRows" class="request-list"></div>
-        </article>
+        </div>
+
+        <div class="reservation-stats">
+          <article><span>Reservations</span><strong id="reservationStatCount">0</strong></article>
+          <article><span>Guests</span><strong id="reservationStatGuests">0</strong></article>
+          <article><span>Accepted</span><strong id="reservationStatAccepted">0</strong></article>
+          <article><span>Pending</span><strong id="reservationStatPending">0</strong></article>
+        </div>
+
+        <div class="requests-grid">
+          <article class="request-panel">
+            <div class="panel-heading">
+              <h2>Table Reservations</h2>
+              <span class="live-pill">Live</span>
+            </div>
+            <div id="reservationRows" class="request-list"></div>
+          </article>
+          <article class="request-panel">
+            <div class="panel-heading">
+              <h2>Event Inquiries</h2>
+              <span class="live-pill">Live</span>
+            </div>
+            <div id="eventRows" class="request-list"></div>
+          </article>
+        </div>
       </section>
     </main>
   </body>

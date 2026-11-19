@@ -187,28 +187,102 @@ function renderMenuRows() {
   window.lucide?.createIcons();
 }
 
-function renderRequests(key, targetId) {
-  const target = document.querySelector(targetId);
-  const list = readStore(key, []);
-  target.innerHTML = list.length
-    ? list
-        .map(
-          (item) => `
-            <div class="request-item">
-              <strong>${item.name}</strong>
-              <span>${item.date || ""} ${item.time || ""} - ${item.guests} guests</span>
-              <span>${item.email || ""} ${item.phone || ""}</span>
-            </div>
-          `,
-        )
-        .join("")
-    : '<p class="empty-state">No requests yet.</p>';
+let selectedReservationDate = new Date().toISOString().slice(0, 10);
+
+function formatReservationDate(value) {
+  const date = new Date(`${value}T12:00:00`);
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "long", year: "numeric" });
 }
 
-function renderAll() {
+async function renderRequests(key, targetId) {
+  const target = document.querySelector(targetId);
+  if (!target) return;
+
+  let reservations = [];
+  let events = [];
+
+  if (window.thefoxCloud) {
+    try {
+      reservations = await window.thefoxCloud.getReservations();
+      events = await window.thefoxCloud.getEventInquiries();
+    } catch (error) {
+      console.warn("Could not load cloud requests.", error);
+    }
+  }
+
+  if (!reservations.length) {
+    reservations = readStore(STORAGE_KEYS.reservations, []);
+  }
+  if (!events.length) {
+    events = readStore(STORAGE_KEYS.events, []);
+  }
+
+  const datedReservations = reservations.filter((item) => item.reservation_date === selectedReservationDate);
+  const datedEvents = events.filter((item) => (item.event_date || getCreatedDate(item.created_at)) === selectedReservationDate);
+
+  const reservationTarget = document.querySelector("#reservationRows");
+  const eventTarget = document.querySelector("#eventRows");
+
+  document.querySelector("#reservationDateTitle").textContent = formatReservationDate(selectedReservationDate);
+  document.querySelector("#reservationDate").value = selectedReservationDate;
+  document.querySelector("#reservationStatCount").textContent = datedReservations.length;
+  document.querySelector("#reservationStatGuests").textContent = datedReservations.reduce((sum, item) => sum + Number(item.guests || 0), 0);
+  document.querySelector("#reservationStatAccepted").textContent = datedReservations.filter((item) => item.status === "accepted").length;
+  document.querySelector("#reservationStatPending").textContent = datedReservations.filter((item) => item.status === "new" || !item.status).length;
+
+  reservationTarget.innerHTML = datedReservations.length
+    ? datedReservations.map((item) => `
+        <div class="request-item">
+          <div class="request-item-header">
+            <strong>${item.customer_name || item.name}</strong>
+            <span class="status-pill status-${item.status || "new"}">${item.status || "new"}</span>
+          </div>
+          <span>${item.reservation_time || item.time || ""} — ${item.guests || 0} guests</span>
+          <span>${item.email || ""} ${item.phone || ""}</span>
+          <div class="order-actions">
+            <button class="accept-order" type="button" data-reservation-action="accepted" data-reservation-id="${item.id}">Accept</button>
+            <button class="deny-order" type="button" data-reservation-action="denied" data-reservation-id="${item.id}">Deny</button>
+          </div>
+        </div>`).join("")
+    : '<p class="empty-state">No reservations for this date.</p>';
+
+  eventTarget.innerHTML = datedEvents.length
+    ? datedEvents.map((item) => `
+        <div class="request-item">
+          <strong>${item.customer_name || item.name}</strong>
+          <span>${item.event_date || item.date || ""} — ${item.guests || 0} guests</span>
+          <span>${item.email || ""} ${item.phone || ""}</span>
+        </div>`).join("")
+    : '<p class="empty-state">No event inquiries for this date.</p>';
+
+  reservationTarget.querySelectorAll("[data-reservation-action]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const id = button.dataset.reservationId;
+      const status = button.dataset.reservationAction;
+      if (window.thefoxCloud) {
+        try {
+          await window.thefoxCloud.updateReservationStatus(id, status);
+        } catch (error) {
+          console.error("Could not update reservation.", error);
+        }
+      }
+      renderAll();
+    });
+  });
+}
+
+function getCreatedDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 10);
+}
+
+async function renderAll() {
   renderMenuRows();
-  renderRequests(STORAGE_KEYS.reservations, "#reservationRows");
-  renderRequests(STORAGE_KEYS.events, "#eventRows");
+  await renderRequests(STORAGE_KEYS.reservations, "#reservationRows");
 }
 
 async function syncCloudMenu() {
@@ -295,14 +369,18 @@ document.querySelector("#exportMenu").addEventListener("click", () => {
   link.click();
   URL.revokeObjectURL(url);
 });
-document.querySelector("#clearReservations").addEventListener("click", () => {
-  writeStore(STORAGE_KEYS.reservations, []);
+document.querySelector("#todayReservations")?.addEventListener("click", () => {
+  selectedReservationDate = new Date().toISOString().slice(0, 10);
   renderAll();
 });
-document.querySelector("#clearEvents").addEventListener("click", () => {
-  writeStore(STORAGE_KEYS.events, []);
+document.querySelector("#reservationDate")?.addEventListener("change", (event) => {
+  if (!event.target.value) return;
+  selectedReservationDate = event.target.value;
   renderAll();
 });
+
+window.thefoxCloud?.subscribe("reservations", () => renderAll());
+window.thefoxCloud?.subscribe("event_inquiries", () => renderAll());
 
 document.addEventListener("DOMContentLoaded", () => {
   if (sessionStorage.getItem(SESSION_KEY) === "1") {

@@ -13,6 +13,7 @@
     <script src="https://unpkg.com/lucide@latest" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="supabase-config.js" defer></script>
+    <script src="i18n.js" defer></script>
     <script src="order.js" defer></script>
   </head>
   <body class="order-body">
@@ -26,29 +27,33 @@
         <i data-lucide="chevron-down"></i>
       </button>
       <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
-        <a href="index.html">Home</a>
-        <a href="index.html#about">About</a>
-        <a href="index.html#menu">Menu</a>
-        <a href="order.html" aria-current="page">Delivery</a>
+        <a href="index.html" data-i18n="about">Home</a>
+        <a href="index.html#about" data-i18n="about">About</a>
+        <a href="index.html#menu" data-i18n="menu">Menu</a>
+        <a href="order.html" aria-current="page" data-i18n="delivery">Delivery</a>
       </nav>
+      <div class="language-switch" aria-label="Choose language">
+        <button type="button" data-lang="sq" aria-label="Shqip">🇦🇱</button>
+        <button type="button" data-lang="en" aria-label="English">🇬🇧</button>
+      </div>
       <div class="header-actions">
-        <a class="solid-button" href="#checkout">Checkout</a>
+        <a class="solid-button" href="#checkout" data-i18n="cart">Checkout</a>
       </div>
     </header>
 
     <main class="order-shell">
       <section class="delivery-hero">
         <div class="delivery-copy">
-          <p class="eyebrow">Fast delivery</p>
-          <h1>Fresh from The Fox to your door.</h1>
-          <p>
+          <p class="eyebrow" data-i18n="fastDelivery">Fast delivery</p>
+          <h1 data-i18n="freshDoor">Fresh from The Fox to your door.</h1>
+          <p data-i18n="deliveryCopy">
             Browse the same menu from the restaurant, add your favourites, and place a quick delivery request.
           </p>
         </div>
         <div class="delivery-badges">
-          <span><i data-lucide="clock-3"></i> 15–30 min</span>
-          <span><i data-lucide="map-pin"></i> Kavajë delivery</span>
-          <span><i data-lucide="wallet"></i> Cash on delivery</span>
+          <span><i data-lucide="clock-3"></i> <span data-i18n="minutes">15–30 min</span></span>
+          <span><i data-lucide="map-pin"></i> <span data-i18n="location">Kavajë delivery</span></span>
+          <span><i data-lucide="wallet"></i> <span data-i18n="cash">Cash on delivery</span></span>
         </div>
       </section>
 
@@ -56,8 +61,8 @@
         <div class="catalog-panel">
           <div class="topbar">
             <div>
-              <p class="eyebrow small">Menu</p>
-              <h2>Order now</h2>
+              <p class="eyebrow small" data-i18n="menu">Menu</p>
+              <h2 data-i18n="orderNow">Order now</h2>
             </div>
             <div class="search-box compact">
               <i data-lucide="search"></i>
@@ -71,45 +76,45 @@
         <aside class="checkout-panel" id="checkout">
           <div class="checkout-header">
             <div>
-              <p class="eyebrow small">Your order</p>
-              <h2>Cart</h2>
+              <p class="eyebrow small" data-i18n="yourOrder">Your order</p>
+              <h2 data-i18n="cart">Cart</h2>
             </div>
             <span class="cart-count" id="cartCount">0 items</span>
           </div>
 
           <div id="cartItems" class="cart-items empty">
-            <p>Your cart is empty. Add a few favourites to get started.</p>
+            <p data-i18n="cartEmpty">Your cart is empty. Add a few favourites to get started.</p>
           </div>
 
           <div class="totals">
-            <div><span>Subtotal</span><strong id="subtotal">0 ALL</strong></div>
-            <div><span>Delivery</span><strong id="deliveryFee">200 ALL</strong></div>
-            <div class="grand-total"><span>Total</span><strong id="total">200 ALL</strong></div>
+            <div><span data-i18n="subtotal">Subtotal</span><strong id="subtotal">0 ALL</strong></div>
+            <div><span data-i18n="deliveryFee">Delivery</span><strong id="deliveryFee">0 ALL</strong></div>
+            <div class="grand-total"><span data-i18n="total">Total</span><strong id="total">0 ALL</strong></div>
           </div>
 
           <form id="orderForm" class="delivery-form">
             <div class="field-row two-up">
               <label>
-                Full name
+                <span data-i18n="fullName">Full name</span>
                 <input name="name" required />
               </label>
               <label>
-                Phone
+                <span data-i18n="phone">Phone</span>
                 <input name="phone" type="tel" required />
               </label>
             </div>
 
             <label>
-              Delivery address
+              <span data-i18n="address">Delivery address</span>
               <input name="address" required />
             </label>
 
             <label>
-              Notes for the kitchen
+              <span data-i18n="kitchenNotes">Notes for the kitchen</span>
               <textarea name="notes" rows="3" placeholder="Extra sauce, no onions, etc."></textarea>
             </label>
 
-            <button class="solid-button submit-order" type="submit">Place delivery order</button>
+            <button class="solid-button submit-order" type="submit" data-i18n="placeOrder">Place delivery order</button>
             <p id="orderMessage" class="form-message" role="status"></p>
           </form>
         </aside>
