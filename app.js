@@ -182,30 +182,39 @@ function wireForms() {
   reservationForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(reservationForm).entries());
-    createRequest(reservationForm, STORAGE_KEYS.reservations);
+    const message = document.querySelector("#reservationMessage");
+    const submitButton = reservationForm.querySelector("button[type='submit']");
 
-    if (window.thefoxCloud) {
-      try {
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending reservation...";
+    message.textContent = "";
+
+    try {
+      if (window.thefoxCloud) {
         await window.thefoxCloud.createReservation({
           id: crypto.randomUUID(),
           created_at: new Date().toISOString(),
-          customer_name: data.name,
-          email: data.email,
-          phone: data.phone || null,
+          customer_name: data.name.trim(),
+          email: data.email.trim(),
+          phone: data.phone?.trim() || null,
           reservation_date: data.date,
           reservation_time: data.time,
           guests: Number(data.guests),
           status: "new",
         });
-      } catch (error) {
-        console.error("Supabase reservation submission failed.", error);
-        document.querySelector("#reservationMessage").textContent = "Could not send reservation. Please try again.";
-        return;
       }
-    }
 
-    reservationForm.reset();
-    document.querySelector("#reservationMessage").textContent = "Reservation request received.";
+      createRequest(reservationForm, STORAGE_KEYS.reservations);
+      reservationForm.reset();
+      message.textContent = "Reservation request received.";
+    } catch (error) {
+      console.error("Supabase reservation submission failed.", error);
+      createRequest(reservationForm, STORAGE_KEYS.reservations);
+      message.textContent = "Reservation saved locally, but cloud sync failed. Please try again or contact the restaurant.";
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Find a Table";
+    }
   });
 
   eventForm?.addEventListener("submit", async (event) => {

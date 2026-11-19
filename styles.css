@@ -21,6 +21,9 @@
 }
 
 html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
@@ -1359,77 +1362,295 @@ textarea:focus {
   to { transform: rotate(360deg); }
 }
 
+@media (min-width: 981px) {
+  .delivery-layout {
+    grid-template-columns: minmax(560px, 1fr) 420px;
+  }
+
+  .orders-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
 @media (max-width: 980px) {
-  .site-header > .language-switch {
-    margin-left: auto;
+  body,
+  main,
+  section,
+  aside,
+  article,
+  form,
+  .band,
+  .split,
+  .reverse,
+  .menu-grid,
+  .footer,
+  .admin-shell,
+  .order-shell,
+  .delivery-layout,
+  .catalog-panel,
+  .checkout-panel,
+  .order-admin-panel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
-  .header-actions .language-switch {
-    position: absolute;
-    right: 108px;
+  .band,
+  .order-shell,
+  .admin-shell {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
+  .intro,
+  .split,
+  .reverse,
+  .admin-layout,
+  .requests-grid,
+  .footer,
   .delivery-layout {
     grid-template-columns: 1fr;
   }
 
-  .checkout-panel {
-    position: static;
+  .image-panel,
+  .form-panel,
+  .hours-panel,
+  .catalog-panel,
+  .checkout-panel,
+  .editor-panel,
+  .table-panel,
+  .request-panel,
+  .order-admin-panel {
+    width: 100%;
+    max-width: 100%;
   }
 
-  .delivery-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .menu-grid,
+  .delivery-grid,
+  .orders-list,
+  .request-list,
+  .reservation-stats,
+  .order-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row,
+  .form-row.three,
+  .field-row,
+  .field-row.two-up {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-heading,
+  .topbar,
+  .checkout-header,
+  .order-dashboard-toolbar,
+  .request-dashboard-toolbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .search-box,
+  .search-box.compact,
+  .compact {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-table-wrap {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .admin-table {
+    min-width: 620px;
+  }
+
+  .cart-items {
+    max-height: 260px;
   }
 }
 
 @media (max-width: 640px) {
-  .site-header {
-    grid-template-columns: auto 1fr auto;
-    justify-content: stretch;
+  h1 {
+    overflow-wrap: anywhere;
   }
 
-  .site-header > .language-switch {
-    justify-self: end;
-    margin-left: 0;
+  h2,
+  h3,
+  p,
+  span,
+  strong,
+  label,
+  address {
+    overflow-wrap: anywhere;
+  }
+
+  .site-header,
+  .order-header {
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 8px;
+  }
+
+  .site-header .brand {
+    max-width: 180px;
   }
 
   .language-switch {
-    position: static;
+    flex-shrink: 0;
   }
 
-  .language-switch button {
-    width: 30px;
-    height: 30px;
-    font-size: 17px;
+  .nav-links {
+    left: 8px;
+    right: 8px;
   }
 
-  .delivery-grid {
-    grid-template-columns: 1fr;
+  .hero-content {
+    width: 100%;
+    max-width: 100%;
+    padding: 110px 16px 70px;
   }
 
-  .checkout-panel {
-    padding: 16px;
+  .hero h1 {
+    font-size: clamp(3.4rem, 18vw, 5rem);
   }
 
-  .cart-items {
-    max-height: 220px;
+  .hero p:not(.eyebrow) {
+    font-size: 1rem;
   }
 
-  .order-dashboard-toolbar {
-    align-items: flex-start;
+  .button-row {
+    width: 100%;
     flex-direction: column;
   }
 
-  .date-controls {
+  .button-row .solid-button,
+  .button-row .ghost-button {
+    width: 100%;
+  }
+
+  .signature-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .signature-strip article {
+    min-width: 0;
+  }
+
+  .menu-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .menu-card .price {
+    justify-self: start;
+  }
+
+  .footer {
+    width: 100%;
+  }
+
+  .socials {
+    justify-content: flex-start;
+  }
+
+  .order-shell {
+    padding: 86px 12px 32px;
+  }
+
+  .delivery-hero {
+    width: 100%;
+    min-height: 0;
+  }
+
+  .delivery-copy {
+    width: 100%;
+  }
+
+  .delivery-copy h1 {
+    max-width: 100%;
+    font-size: clamp(2.25rem, 12vw, 3.1rem);
+  }
+
+  .delivery-badges {
+    width: 100%;
+  }
+
+  .delivery-badges span {
+    max-width: 100%;
+  }
+
+  .catalog-panel,
+  .checkout-panel,
+  .order-admin-panel,
+  .admin-order-item,
+  .request-panel,
+  .editor-panel,
+  .table-panel {
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .delivery-card,
+  .cart-item,
+  .admin-order-item {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .cart-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .qty-controls {
+    justify-self: end;
+  }
+
+  .totals,
+  .delivery-form,
+  .delivery-form label,
+  .delivery-form input,
+  .delivery-form textarea {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .date-controls,
+  .request-dashboard-toolbar,
+  .order-dashboard-toolbar {
     width: 100%;
   }
 
   .date-controls input {
-    flex: 1;
+    min-width: 0;
   }
 
-  .order-stats {
+  .order-stats,
+  .reservation-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .order-actions {
+    width: 100%;
+  }
+
+  .order-actions button {
+    min-width: 0;
+  }
+
+  .admin-shell {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .admin-title h1 {
+    font-size: clamp(2.2rem, 12vw, 3.5rem);
+    overflow-wrap: anywhere;
   }
 }
 
@@ -1488,8 +1709,4 @@ textarea:focus {
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-}
-
-.request-item-header .status-pill {
-  margin: 0;
 }
