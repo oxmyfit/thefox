@@ -1474,183 +1474,28 @@ textarea:focus {
 }
 
 @media (max-width: 640px) {
-  h1 {
-    overflow-wrap: anywhere;
+  .order-body .site-header {
+    height: 62px;
+    min-height: 62px;
   }
 
-  h2,
-  h3,
-  p,
-  span,
-  strong,
-  label,
-  address {
-    overflow-wrap: anywhere;
+  .order-body .order-shell {
+    padding-top: 74px;
   }
 
-  .site-header,
-  .order-header {
-    width: 100% !important;
-    max-width: 100% !important;
-    gap: 8px;
+  .order-body .header-actions {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    z-index: 40;
+    display: flex;
+    width: auto;
   }
 
-  .site-header .brand {
-    max-width: 180px;
-  }
-
-  .language-switch {
-    flex-shrink: 0;
-  }
-
-  .nav-links {
-    left: 8px;
-    right: 8px;
-  }
-
-  .hero-content {
-    width: 100%;
-    max-width: 100%;
-    padding: 110px 16px 70px;
-  }
-
-  .hero h1 {
-    font-size: clamp(3.4rem, 18vw, 5rem);
-  }
-
-  .hero p:not(.eyebrow) {
-    font-size: 1rem;
-  }
-
-  .button-row {
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .button-row .solid-button,
-  .button-row .ghost-button {
-    width: 100%;
-  }
-
-  .signature-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .signature-strip article {
-    min-width: 0;
-  }
-
-  .menu-card {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .menu-card .price {
-    justify-self: start;
-  }
-
-  .footer {
-    width: 100%;
-  }
-
-  .socials {
-    justify-content: flex-start;
-  }
-
-  .order-shell {
-    padding: 86px 12px 32px;
-  }
-
-  .delivery-hero {
-    width: 100%;
-    min-height: 0;
-  }
-
-  .delivery-copy {
-    width: 100%;
-  }
-
-  .delivery-copy h1 {
-    max-width: 100%;
-    font-size: clamp(2.25rem, 12vw, 3.1rem);
-  }
-
-  .delivery-badges {
-    width: 100%;
-  }
-
-  .delivery-badges span {
-    max-width: 100%;
-  }
-
-  .catalog-panel,
-  .checkout-panel,
-  .order-admin-panel,
-  .admin-order-item,
-  .request-panel,
-  .editor-panel,
-  .table-panel {
-    border-radius: 12px;
-    padding: 14px;
-  }
-
-  .delivery-card,
-  .cart-item,
-  .admin-order-item {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .cart-item {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .qty-controls {
-    justify-self: end;
-  }
-
-  .totals,
-  .delivery-form,
-  .delivery-form label,
-  .delivery-form input,
-  .delivery-form textarea {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .date-controls,
-  .request-dashboard-toolbar,
-  .order-dashboard-toolbar {
-    width: 100%;
-  }
-
-  .date-controls input {
-    min-width: 0;
-  }
-
-  .order-stats,
-  .reservation-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .order-actions {
-    width: 100%;
-  }
-
-  .order-actions button {
-    min-width: 0;
-  }
-
-  .admin-shell {
-    width: 100%;
-    max-width: 100%;
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  .admin-title h1 {
-    font-size: clamp(2.2rem, 12vw, 3.5rem);
-    overflow-wrap: anywhere;
+  .order-body .header-actions .solid-button {
+    min-height: 48px;
+    border-radius: 999px;
+    box-shadow: 0 10px 28px rgba(184, 74, 42, 0.34);
   }
 }
 

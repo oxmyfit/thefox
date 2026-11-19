@@ -210,7 +210,7 @@ function wireForms() {
     } catch (error) {
       console.error("Supabase reservation submission failed.", error);
       createRequest(reservationForm, STORAGE_KEYS.reservations);
-      message.textContent = "Reservation saved locally, but cloud sync failed. Please try again or contact the restaurant.";
+      message.textContent = `Cloud reservation failed: ${error.message || "Please run the Supabase SQL setup and try again."}`;
     } finally {
       submitButton.disabled = false;
       submitButton.textContent = "Find a Table";
@@ -236,7 +236,7 @@ function wireForms() {
         });
       } catch (error) {
         console.error("Supabase event inquiry submission failed.", error);
-        document.querySelector("#eventMessage").textContent = "Could not send inquiry. Please try again.";
+        document.querySelector("#eventMessage").textContent = `Cloud inquiry failed: ${error.message || "Please run the Supabase SQL setup and try again."}`;
         return;
       }
     }
