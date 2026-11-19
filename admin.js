@@ -57,6 +57,7 @@ function unlockDashboard() {
     element.hidden = false;
   });
   renderAll();
+  syncCloudMenu();
   window.lucide?.createIcons();
 }
 
@@ -128,8 +129,15 @@ function getMenu() {
   return defaultMenu;
 }
 
-function setMenu(menu) {
+async function setMenu(menu) {
   writeStore(STORAGE_KEYS.menu, menu);
+  if (window.thefoxCloud) {
+    try {
+      await window.thefoxCloud.saveMenu(menu);
+    } catch (error) {
+      console.error("Supabase menu save failed.", error);
+    }
+  }
   notifyMenuUpdate();
 }
 
@@ -203,6 +211,21 @@ function renderAll() {
   renderRequests(STORAGE_KEYS.events, "#eventRows");
 }
 
+async function syncCloudMenu() {
+  if (!window.thefoxCloud) return;
+  try {
+    const menu = await window.thefoxCloud.getMenu();
+    if (menu.length) {
+      writeStore(STORAGE_KEYS.menu, menu);
+      renderAll();
+    }
+  } catch (error) {
+    console.warn("Could not synchronize admin menu from Supabase.", error);
+  }
+}
+
+window.thefoxCloud?.subscribe("menu_items", () => syncCloudMenu());
+
 gateForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const code = new FormData(gateForm).get("code");
@@ -215,7 +238,7 @@ gateForm.addEventListener("submit", async (event) => {
   gateMessage.textContent = "Incorrect code.";
 });
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(form).entries());
   const id = data.id || crypto.randomUUID();
@@ -229,7 +252,7 @@ form.addEventListener("submit", (event) => {
   };
   const menu = getMenu();
   const nextMenu = data.id ? menu.map((entry) => (entry.id === id ? item : entry)) : [item, ...menu];
-  setMenu(nextMenu);
+  await setMenu(nextMenu);
   resetForm();
   renderAll();
 });
@@ -252,15 +275,14 @@ rows.addEventListener("click", (event) => {
   }
 
   if (deleteButton) {
-    setMenu(getMenu().filter((entry) => entry.id !== deleteButton.dataset.delete));
-    renderAll();
+    setMenu(getMenu().filter((entry) => entry.id !== deleteButton.dataset.delete)).then(() => renderAll());
   }
 });
 
 search.addEventListener("input", renderMenuRows);
 document.querySelector("#clearForm").addEventListener("click", resetForm);
-document.querySelector("#resetMenu").addEventListener("click", () => {
-  setMenu(defaultMenu);
+document.querySelector("#resetMenu").addEventListener("click", async () => {
+  await setMenu(defaultMenu);
   resetForm();
   renderAll();
 });

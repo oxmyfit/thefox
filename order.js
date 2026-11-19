@@ -63,9 +63,21 @@ function writeStore(key, value) {
   }
 }
 
-function getMenu() {
+async function getMenu() {
+  if (window.thefoxCloud) {
+    try {
+      const cloudMenu = await window.thefoxCloud.getMenu();
+      if (cloudMenu.length) {
+        writeStore(STORAGE_KEYS.menu, cloudMenu);
+        return cloudMenu;
+      }
+    } catch (error) {
+      console.warn("Could not load Supabase menu.", error);
+    }
+  }
+
   const menu = readStore(STORAGE_KEYS.menu, []);
-  return Array.isArray(menu) && menu.length ? menu : [];
+  return Array.isArray(menu) ? menu : [];
 }
 
 function setCart(cart) {
@@ -80,8 +92,8 @@ function formatMoney(value) {
   return `${Number(value || 0).toLocaleString("en-US")} ALL`;
 }
 
-function addItemToCart(itemId) {
-  const product = getMenu().find((entry) => entry.id === itemId);
+async function addItemToCart(itemId) {
+  const product = (await getMenu()).find((entry) => entry.id === itemId);
   if (!product) return;
 
   const cart = getCart();
@@ -110,13 +122,13 @@ function updateQuantity(itemId, delta) {
   renderCart();
 }
 
-function renderMenu() {
+async function renderMenu() {
   const menuGrid = document.querySelector("#menuGrid");
   const filters = document.querySelector("#menuFilters");
   const search = document.querySelector("#menuSearch");
   if (!menuGrid || !filters) return;
 
-  const menu = getMenu();
+  const menu = await getMenu();
   const categories = ["All", ...new Set(menu.map((item) => item.category))];
   let activeCategory = "All";
 
@@ -231,7 +243,7 @@ function renderCart() {
   });
 }
 
-function placeOrder(event) {
+async function placeOrder(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const cart = getCart();
@@ -262,14 +274,29 @@ function placeOrder(event) {
   orders.unshift(order);
   writeStore(STORAGE_KEYS.orders, orders);
 
+  if (window.thefoxCloud) {
+    try {
+      await window.thefoxCloud.createOrder(order);
+    } catch (error) {
+      console.error("Supabase order submission failed.", error);
+      message.textContent = "Order could not be sent. Please try again.";
+      message.style.color = "#a8321c";
+      return;
+    }
+  }
+
   setCart([]);
   renderCart();
   form.reset();
   message.textContent = "Your delivery order was sent successfully.";
   message.style.color = "#315747";
 
-  const eventName = "thefox:new-order";
-  window.dispatchEvent(new CustomEvent(eventName, { detail: order }));
+  window.dispatchEvent(new CustomEvent("thefox:new-order", { detail: order }));
+}
+
+function subscribeToMenuUpdates() {
+  if (!window.thefoxCloud) return;
+  window.thefoxCloud.subscribe("menu_items", () => renderMenu());
 }
 
 function listenForLiveOrderUpdates() {
@@ -285,6 +312,7 @@ function listenForLiveOrderUpdates() {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderMenu();
+  subscribeToMenuUpdates();
   renderCart();
 
   const orderForm = document.querySelector("#orderForm");
@@ -294,12 +322,4 @@ document.addEventListener("DOMContentLoaded", () => {
   if (search) search.value = "";
 
   window.lucide?.createIcons();
-  setTimeout(() => {
-    if (!getMenu().length) {
-      const fallbackMenu = readStore("thefox.menu", []);
-      if (fallbackMenu.length) {
-        renderMenu();
-      }
-    }
-  }, 150);
 });

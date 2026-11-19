@@ -82,7 +82,19 @@ function notifyMenuUpdate() {
   window.dispatchEvent(new CustomEvent("thefox:menu-updated", { detail: { menu: getMenu() } }));
 }
 
-function getMenu() {
+async function getMenu() {
+  if (window.thefoxCloud) {
+    try {
+      const cloudMenu = await window.thefoxCloud.getMenu();
+      if (cloudMenu.length) {
+        writeStore(STORAGE_KEYS.menu, cloudMenu);
+        return cloudMenu;
+      }
+    } catch (error) {
+      console.warn("Could not load menu from Supabase; using local fallback.", error);
+    }
+  }
+
   const menu = readStore(STORAGE_KEYS.menu, null);
   if (menu) return menu;
   writeStore(STORAGE_KEYS.menu, defaultMenu);
@@ -96,12 +108,12 @@ function createRequest(form, key) {
   writeStore(key, list);
 }
 
-function renderMenu() {
+async function renderMenu() {
   const menuGrid = document.querySelector("#menuGrid");
   const filters = document.querySelector("#menuFilters");
   if (!menuGrid || !filters) return;
 
-  const menu = getMenu();
+  const menu = await getMenu();
   let activeCategory = "All";
 
   function paint() {
@@ -111,9 +123,10 @@ function renderMenu() {
       .join("");
 
     const visible = activeCategory === "All" ? menu : menu.filter((item) => item.category === activeCategory);
-    menuGrid.innerHTML = visible
-      .map(
-        (item) => `
+    menuGrid.innerHTML
+      = visible
+        .map(
+          (item) => `
           <article class="menu-card">
             <div>
               ${item.featured ? '<span class="badge">Featured</span>' : ""}
@@ -123,12 +136,12 @@ function renderMenu() {
             <span class="price">${Number(item.price).toLocaleString("en-US")} ALL</span>
           </article>
         `,
-      )
-      .join("");
+        )
+        .join("");
   }
 
-  function syncMenu() {
-    const updatedMenu = getMenu();
+  async function syncMenu() {
+    const updatedMenu = await getMenu();
     if (JSON.stringify(updatedMenu) !== JSON.stringify(menu)) {
       menu.splice(0, menu.length, ...updatedMenu);
     }
@@ -153,6 +166,13 @@ function renderMenu() {
   });
 
   paint();
+}
+
+function subscribeToMenuUpdates() {
+  if (!window.thefoxCloud) return;
+  window.thefoxCloud.subscribe("menu_items", () => {
+    renderMenu();
+  });
 }
 
 function wireForms() {
@@ -213,6 +233,7 @@ function wireMobileMenu() {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderMenu();
+  subscribeToMenuUpdates();
   wireForms();
   wireHero();
   wireMobileMenu();

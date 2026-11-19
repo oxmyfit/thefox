@@ -128,18 +128,36 @@ function playOrderSound() {
   oscillator.stop(now + 0.25);
 }
 
-function updateOrderStatus(orderId, nextStatus) {
+async function updateOrderStatus(orderId, nextStatus) {
   const orders = readStore(STORAGE_KEYS.orders, []);
   const updated = orders.map((order) => (order.id === orderId ? { ...order, status: nextStatus } : order));
   writeStore(STORAGE_KEYS.orders, updated);
-  renderOrders();
+
+  if (window.thefoxCloud) {
+    try {
+      await window.thefoxCloud.updateOrderStatus(orderId, nextStatus);
+    } catch (error) {
+      console.error("Could not update Supabase order status.", error);
+    }
+  }
+
+  await renderOrders();
 }
 
-function renderOrders() {
+async function renderOrders() {
   const list = document.querySelector("#ordersList");
   if (!list) return;
 
-  const orders = readStore(STORAGE_KEYS.orders, []);
+  let orders = readStore(STORAGE_KEYS.orders, []);
+  if (window.thefoxCloud) {
+    try {
+      orders = await window.thefoxCloud.getOrders();
+      writeStore(STORAGE_KEYS.orders, orders);
+    } catch (error) {
+      console.error("Could not load Supabase orders.", error);
+    }
+  }
+
   if (!orders.length) {
     list.innerHTML = '<div class="empty-state-panel">No delivery orders yet.</div>';
     return;
@@ -189,6 +207,22 @@ function renderOrders() {
   });
 }
 
+function watchForOrders() {
+  window.addEventListener("storage", (event) => {
+    if (event.key === STORAGE_KEYS.orders) {
+      renderOrders();
+      playOrderSound();
+    }
+  });
+
+  if (window.thefoxCloud) {
+    window.thefoxCloud.subscribe("orders", () => {
+      renderOrders();
+      playOrderSound();
+    });
+  }
+}
+
 gateForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const code = new FormData(gateForm).get("code");
@@ -204,6 +238,7 @@ gateForm?.addEventListener("submit", async (event) => {
 document.addEventListener("DOMContentLoaded", () => {
   if (sessionStorage.getItem(SESSION_KEY) === "1") {
     unlockOrders();
+    watchForOrders();
     return;
   }
   window.lucide?.createIcons();
