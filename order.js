@@ -304,6 +304,10 @@ async function placeOrder(event) {
   message.textContent = "Your delivery order was sent successfully.";
   message.style.color = "#315747";
 
+  document.body.classList.remove("cart-open");
+  const backdrop = document.querySelector("#cartBackdrop");
+  if (backdrop) backdrop.hidden = true;
+
   window.dispatchEvent(new CustomEvent("thefox:new-order", { detail: order }));
 }
 
@@ -332,6 +336,32 @@ function listenForLiveOrderUpdates() {
   });
 }
 
+function wireMobileCart() {
+  const openButton = document.querySelector("#openCartButton");
+  const closeButton = document.querySelector("#closeCartButton");
+  const backdrop = document.querySelector("#cartBackdrop");
+  if (!openButton || !closeButton || !backdrop) return;
+
+  function openCart(event) {
+    if (!window.matchMedia("(max-width: 640px)").matches) return;
+    event?.preventDefault();
+    document.body.classList.add("cart-open");
+    backdrop.hidden = false;
+  }
+
+  function closeCart() {
+    document.body.classList.remove("cart-open");
+    backdrop.hidden = true;
+  }
+
+  openButton.addEventListener("click", openCart);
+  closeButton.addEventListener("click", closeCart);
+  backdrop.addEventListener("click", closeCart);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeCart();
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderMenu();
   subscribeToMenuUpdates();
@@ -344,4 +374,5 @@ document.addEventListener("DOMContentLoaded", () => {
   if (search) search.value = "";
 
   window.lucide?.createIcons();
+  wireMobileCart();
 });
